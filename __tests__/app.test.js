@@ -3,6 +3,7 @@ const app = require('../app')
 const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const testData = require('../db/data/test-data/index')
+const endpoints = require('../endpoints.json')
 
 beforeEach(async()=>await seed(testData))
 
@@ -26,6 +27,16 @@ describe('/api/topics', ()=>{
         return request(app).get('/api/not-a-route').expect(404)
         .then(({body: {message}})=>{
             expect(message).toBe('Invalid endpoint')
+        })
+    })
+})
+
+describe('/api', ()=>{
+    test('GET:200 responds with an object describing all the available endpoints',()=>{
+        return request(app).get('/api').expect(200)
+        .then(({body})=>{
+            expect(typeof body.endpoints).toBe('object')
+            expect(body.endpoints).toEqual(endpoints)
         })
     })
 })
