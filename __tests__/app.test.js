@@ -9,6 +9,15 @@ beforeEach(async()=>await seed(testData))
 
 afterAll(()=>db.end())
 
+describe('/api/not-a-route',()=>{
+    test('GET:404 responds with an error message when given an invalid route', ()=>{
+        return request(app).get('/api/not-a-route').expect(404)
+        .then(({body: {message}})=>{
+            expect(message).toBe('Invalid endpoint')
+        })
+    })
+})
+
 describe('/api/topics', ()=>{
     test('GET:200 responds with an array containing all topics in correct format', ()=>{
         return request(app).get('/api/topics').expect(200)
@@ -20,13 +29,6 @@ describe('/api/topics', ()=>{
                     slug: expect.any(String)
                 })
             })
-        })
-    })
-
-    test('GET:404 responds with an error message when given an invalid route', ()=>{
-        return request(app).get('/api/not-a-route').expect(404)
-        .then(({body: {message}})=>{
-            expect(message).toBe('Invalid endpoint')
         })
     })
 })
@@ -44,6 +46,7 @@ describe('/api', ()=>{
 describe('/api/articles/:article_id', ()=>{
     test('GET:200 responds with a specific article object', ()=>{
         const article_1 = {
+            article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
             author: "butter_bridge",
@@ -70,6 +73,33 @@ describe('/api/articles/:article_id', ()=>{
         return request(app).get('/api/articles/dog').expect(400)
         .then(({body: {message}})=>{
             expect(message).toBe('Bad request')
+        })
+    })
+})
+
+describe('/api/articles', ()=>{
+    test('GET:200 responds with an array of article objects sorted by date in descending order', ()=>{
+        return request(app).get('/api/articles').expect(200)
+        .then(({body: {articles}})=>{
+            expect(articles.length).toBe(13)
+
+            expect(articles).toBeSortedBy('created_at', {descending: true})
+
+            articles.forEach((article)=>{
+                expect(article).not.toHaveProperty('body')
+                expect(article).toMatchObject(
+                    {
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(String)
+                    }
+                )
+            })
         })
     })
 })
