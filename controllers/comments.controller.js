@@ -15,5 +15,8 @@ exports.postCommentByArticleId = (req, res, next) => {
     fetchArticleById(id)
     .then(()=>insertCommentByArticleId(id, newComment))
     .then((comment)=>{res.status(201).send({comment})})
-    .catch(next)
+    .catch(err=>{
+        if (err.code === '23503') res.status(404).send({message: 'user not found'})
+        next(err)
+    })
 }

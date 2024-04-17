@@ -14,3 +14,16 @@ exports.fetchArticles = () => {
         ORDER BY articles.created_at DESC;`)
         .then(({ rows }) => rows)
 }
+
+exports.updateArticleById = (id, { inc_votes: newVote }) => {
+    return db.query(`UPDATE articles
+        SET votes = CASE
+                    WHEN votes + $1 > 0  THEN votes + $1
+                    ELSE 0
+                    END
+        WHERE article_id = $2
+        RETURNING *;`, [newVote, id])
+        .then(({ rows })=>{
+            return (rows.length === 0) ? Promise.reject({ status: 404, message: 'article not found' }) : rows[0];
+        })
+}
