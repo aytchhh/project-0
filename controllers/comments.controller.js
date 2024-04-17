@@ -1,5 +1,5 @@
 const { fetchArticleById } = require("../models/articles.model")
-const { fetchCommentsByArticleId, insertCommentByArticleId } = require("../models/comments.model")
+const { fetchCommentsByArticleId, insertCommentByArticleId, removeCommentById } = require("../models/comments.model")
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const {article_id: id} = req.params
@@ -19,4 +19,11 @@ exports.postCommentByArticleId = (req, res, next) => {
         if (err.code === '23503') res.status(404).send({message: 'user not found'})
         next(err)
     })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const {comment_id: id} = req.params
+    removeCommentById(id)
+    .then(()=>{res.status(204).send()})
+    .catch(next)
 }
