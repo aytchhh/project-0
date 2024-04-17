@@ -18,6 +18,7 @@ PGDATABASE=my_database
 ```
 (see /db/setup.sql for the database names)
 <br>
+<br>
 
 ## Endpoints
 The **endpoints.json** file contains details about all the existing endpoints on the API, it **requires updating** whenever a new endpoint is added. 

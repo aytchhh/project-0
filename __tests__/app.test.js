@@ -105,7 +105,8 @@ describe('/api/articles', ()=>{
 })
 
 describe('/api/articles/:article_id/comments', ()=>{
-    test('GET:200 responds with an array of comments for the given article_id, sorted by date in descending order', ()=>{
+    describe('GET', ()=>{
+        test('GET:200 responds with an array of comments for the given article_id, sorted by date in descending order', ()=>{
         return request(app).get('/api/articles/9/comments').expect(200)
         .then(({body: {comments}})=>{
             expect(comments.length).toBe(2)
@@ -127,25 +128,75 @@ describe('/api/articles/:article_id/comments', ()=>{
         })
     })
 
-    test('GET:200 responds with an empty array when article has no comments', ()=>{
-        return request(app).get('/api/articles/7/comments').expect(200)
-        .then(({body: {comments}})=>{
-            expect(Array.isArray(comments)).toBe(true)
-            expect(comments.length).toBe(0)
+        test('GET:200 responds with an empty array when article has no comments', ()=>{
+            return request(app).get('/api/articles/7/comments').expect(200)
+            .then(({body: {comments}})=>{
+                expect(Array.isArray(comments)).toBe(true)
+                expect(comments.length).toBe(0)
+            })
+        })
+
+        test('GET:404 responds with an error message when given a valid but non-existent id', ()=>{
+            return request(app).get('/api/articles/999999/comments').expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('article not found')
+            })
+        })
+
+        test('GET:400 responds with an error message when given an invalid id', ()=>{
+            return request(app).get('/api/articles/dog/comments').expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
         })
     })
 
-    test('GET:404 responds with an error message when given a valid but non-existent id', ()=>{
-        return request(app).get('/api/articles/999999/comments').expect(404)
-        .then(({body: {message}})=>{
-            expect(message).toBe('article not found')
+    describe('POST', ()=>{
+        test('POST:201 responds with newly added comment', ()=>{
+            const newComment = {username: "lurker", body: "a comment"}
+            return request(app).post('/api/articles/7/comments').send(newComment).expect(201)
+            .then(({body: {comment}})=>{
+                expect(comment).toMatchObject({
+                    comment_id: 19,
+                    body: 'a comment',
+                    article_id: 7,
+                    author: 'lurker',
+                    votes: 0,
+                    created_at: expect.any(String)
+                })
+            })
         })
-    })
 
-    test('GET:400 responds with an error message when given an invalid id', ()=>{
-        return request(app).get('/api/articles/dog/comments').expect(400)
-        .then(({body: {message}})=>{
-            expect(message).toBe('Bad request')
+        test('POST:400 responds with an error message when provided incomplete object', ()=>{
+            return request(app).post('/api/articles/7/comments').send({username: "lurker"}).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
         })
+
+        test('POST:400 responds with an error message when provided bad object', ()=>{
+            const newComment = {username: 1, body: "a comment"}
+            return request(app).post('/api/articles/7/comments').send(newComment).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
+        })
+
+        test('POST:400 responds with an error message when given an invalid article id', ()=>{
+            const newComment = {username: 'lurker', body: 'a comment'}
+            return request(app).post('/api/articles/dog/comments').send(newComment).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
+        })
+
+        test('POST:404 responds with an error message when given a valid but non-existent id', ()=>{
+            const newComment = {username: 'lurker', body: 'a comment'}
+            return request(app).post('/api/articles/999999/comments').send(newComment).expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('article not found')
+            })
+        })
+
     })
 })
