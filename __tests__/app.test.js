@@ -277,3 +277,23 @@ describe('/api/articles/:article_id/comments', ()=>{
 
     })
 })
+
+describe('/api/comments/:comment_id', ()=>{
+    test('DELETE:204 deletes the specific comment and sends nothing back', ()=>{
+        return request(app).delete('/api/comments/1').expect(204)
+    })
+
+    test('DELETE:404 responds with an error message when given a valid but non-existent id', () => {
+        return request(app).delete('/api/comments/999999').expect(404)
+        .then(({body: {message}}) => {
+            expect(message).toBe('comment not found')
+        });
+    })
+
+    test('DELETE:400 responds with an error message when given an invalid id', () => {
+        return request(app).delete('/api/comments/dog').expect(400)
+        .then(({body: {message}}) => {
+            expect(message).toBe('Bad request')
+        });
+    })
+})
