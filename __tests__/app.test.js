@@ -44,35 +44,104 @@ describe('/api', ()=>{
 })
 
 describe('/api/articles/:article_id', ()=>{
-    test('GET:200 responds with a specific article object', ()=>{
-        const article_1 = {
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            created_at: "2020-07-09T20:11:00.000Z",
-            votes: 100,
-            article_img_url:
-              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          }
-        return request(app).get('/api/articles/1').expect(200)
-        .then(({body: {article}})=>{
-            expect(article).toMatchObject(article_1)
+    describe('GET', ()=>{
+        test('GET:200 responds with a specific article object', ()=>{
+            const article_1 = {
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 100,
+                article_img_url:
+                  "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+              }
+            return request(app).get('/api/articles/1').expect(200)
+            .then(({body: {article}})=>{
+                expect(article).toMatchObject(article_1)
+            })
+        })
+    
+        test('GET:404 responds with an error message when given a valid but non-existent id', ()=>{
+            return request(app).get('/api/articles/999999').expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('article not found')
+            })
+        })
+    
+        test('GET:400 responds with an error message when given an invalid id', ()=>{
+            return request(app).get('/api/articles/dog').expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
         })
     })
 
-    test('GET:404 responds with an error message when given a valid but non-existent id', ()=>{
-        return request(app).get('/api/articles/999999').expect(404)
-        .then(({body: {message}})=>{
-            expect(message).toBe('article not found')
+    describe('PATCH', ()=>{
+        const newVote = { inc_votes: 1 }
+        test('PATCH:200 responds with newly updated article', ()=>{
+            return request(app).patch('/api/articles/1').send(newVote).expect(200)
+            .then(({body: {article}})=>{
+                expect(article).toMatchObject(
+                    {
+                        article_id: 1,
+                        title: 'Living in the shadow of a great man',
+                        topic: 'mitch',
+                        author: 'butter_bridge',
+                        body: 'I find this existence challenging',
+                        created_at: '2020-07-09T20:11:00.000Z',
+                        votes: 101,
+                        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                      }
+                )
+            })
         })
-    })
 
-    test('GET:400 responds with an error message when given an invalid id', ()=>{
-        return request(app).get('/api/articles/dog').expect(400)
-        .then(({body: {message}})=>{
-            expect(message).toBe('Bad request')
+        test('PATCH:200 Votes can only be decreased to 0', ()=>{
+            return request(app).patch('/api/articles/1').send({inc_votes : -200}).expect(200)
+            .then(({body: {article}})=>{
+                expect(article).toMatchObject(
+                    {
+                        article_id: 1,
+                        title: 'Living in the shadow of a great man',
+                        topic: 'mitch',
+                        author: 'butter_bridge',
+                        body: 'I find this existence challenging',
+                        created_at: '2020-07-09T20:11:00.000Z',
+                        votes: 0,
+                        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                      }
+                )
+            })
+        })
+
+        test('PATCH:404 responds with an error message when given a valid but non-existent id', ()=>{
+            return request(app).patch('/api/articles/999999').send(newVote).expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('article not found')
+            })
+        })
+
+        test('PATCH:400 responds with an error message when given an invalid id', ()=>{
+            return request(app).patch('/api/articles/dog').send(newVote).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
+        })
+
+        test('PATCH: 400 responds with an error message when provided bad object', ()=>{
+            return request(app).patch('/api/articles/dog').send({inc_votes: 'one'}).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
+        })
+
+        test('PATCH: 400 responds with an error message when provided bad object', ()=>{
+            return request(app).patch('/api/articles/dog').send({votes: 1}).expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Bad request')
+            })
         })
     })
 })
@@ -175,10 +244,18 @@ describe('/api/articles/:article_id/comments', ()=>{
         })
 
         test('POST:400 responds with an error message when provided bad object', ()=>{
-            const newComment = {username: 1, body: "a comment"}
+            const newComment = {user: 'lurker', body: "a comment"}
             return request(app).post('/api/articles/7/comments').send(newComment).expect(400)
             .then(({body: {message}})=>{
                 expect(message).toBe('Bad request')
+            })
+        })
+
+        test('POST:404 responds with an error message when provided non-existent username', ()=>{
+            const newComment = {username: 'some user', body: "a comment"}
+            return request(app).post('/api/articles/7/comments').send(newComment).expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('user not found')
             })
         })
 
