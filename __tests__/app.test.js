@@ -173,6 +173,34 @@ describe('/api/articles', ()=>{
     })
 })
 
+describe('/api/articles?queries', ()=>{
+        test('GET:200 responds with an array of articles filtered by specified topic', ()=>{
+            return request(app).get('/api/articles?topic=cats').expect(200)
+            .then(({body: {articles}})=>{
+                expect(articles.length).toBe(1)
+                expect(articles[0]).toMatchObject(
+                    {
+                        article_id: 5,
+                        author: 'rogersop',
+                        title: 'UNCOVERED: catspiracy to bring down democracy',
+                        topic: 'cats',
+                        created_at: '2020-08-03T13:14:00.000Z',
+                        votes: 0,
+                        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                        comment_count: '2'
+                      }
+                )
+            })
+        })
+
+        test('GET:404 responds with an error message when provided with non-existent topic', ()=>{
+            return request(app).get('/api/articles?topic=1').expect(404)
+            .then(({body: {message}})=>{
+                expect(message).toBe('article not found')
+            })
+        })
+    })
+
 describe('/api/articles/:article_id/comments', ()=>{
     describe('GET', ()=>{
         test('GET:200 responds with an array of comments for the given article_id, sorted by date in descending order', ()=>{
