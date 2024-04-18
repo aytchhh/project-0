@@ -211,6 +211,21 @@ describe('/api/articles?queries', ()=>{
             })
         })
 
+        test('GET:200 responds with an empty array when topic has no related articles', ()=>{
+            return request(app).get('/api/articles?topic=paper').expect(200)
+            .then(({body: {articles}})=>{
+                expect(Array.isArray(articles)).toBe(true)
+                expect(articles.length).toBe(0)
+            })
+        })
+
+        test('GET:400 responds with an error message when provided with invalid query', ()=>{
+            return request(app).get('/api/articles?abc=1').expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Invalid query')
+            })
+        })
+
         test('GET:404 responds with an error message when provided with non-existent topic', ()=>{
             return request(app).get('/api/articles?topic=1').expect(404)
             .then(({body: {message}})=>{
