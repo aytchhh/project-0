@@ -1,15 +1,17 @@
 # Northcoders News API
 
-NC News API is a back-end interface crafted for modern web applications. It simplifies data management with PostgreSQL databases, enabling flexible interaction via endpoints. 
+NC News API is a back-end interface built for modern web applications. It simplifies data management with PostgreSQL databases, enabling flexible interaction via endpoints. 
 
 Designed to emulate real-world backend service like reddit, an efficient solution for creating and accessing application data programmatically.
+<br>
+<br>
 
 ## Getting Started
 1. Visit [NC News](https://nc-news-hwajay.onrender.com/)
 2. Make a request to an existing endpoint such as **/api**
-```sh
-https://nc-news-hwajay.onrender.com/api
-```
+- e.g.
+`https://nc-news-hwajay.onrender.com/api`
+
 3. Browse through the result
 <br>
 
@@ -30,7 +32,7 @@ Before setting up, make sure your system meets the following requirements:
 
 1. Clone the repository:
 
-- type the following commands in your terminal:
+- Navigate to the folder where you want to clone the repo, then type the following commands in your terminal: 
 ```sh
 git clone https://github.com/aytchhh/project-0.git
 ```
@@ -38,8 +40,11 @@ git clone https://github.com/aytchhh/project-0.git
 
 - After cloning, open this repo in VSCode or your preferred editor. (If you'd like to open it using your terminal, [this video](https://www.youtube.com/watch?v=iP5FKZXtDBs) is a good guide.)
 
+- open the terminal within your editor. For VSCode, press **Ctrl+\`** or **Cmd+`**
+
+- type the following commands:<br><br>
 2. Install dependencies:
-- open the terminal within your editor, for VSCode, press **Ctrl+\`** or **Cmd+`**
+
 
 ```sh
 npm install
@@ -54,8 +59,8 @@ npm seed
 
 <br>
 
-To connect to the databases, you will need to create two **.env** files within the project root directory.<br><br> 
-type the following commands in your terminal: 
+- To connect to the databases, you will need to create two **.env** files within the project root directory.<br><br> 
+- type the following commands: 
 ```sh
 touch .env.test
 ```
@@ -64,7 +69,7 @@ touch .env.development
 ```
 <br>
 
-Within these files, add **PGDATABASE=**, with the correct database name for that environment.
+- Within these files, add **PGDATABASE=**, with the correct database name for that environment.
 e.g.
 ```js
 PGDATABASE=my_database
@@ -73,7 +78,7 @@ PGDATABASE=my_database
 <br>
 <br>
 
-After setting up, you should be able to use **npm test** to run all JEST tests in the __test__ folder
+- After setting up, you should be able to use **npm test** to run all JEST tests in the __test__ folder
 ```sh
 npm test
 ```
