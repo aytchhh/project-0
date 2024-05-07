@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const { getEndpoints } = require('./controllers/api.controller');
 const { getTopics } = require('./controllers/topics.controller');
 const { getUsers } = require('./controllers/users.controller')
@@ -7,6 +8,8 @@ const { getCommentsByArticleId, postCommentByArticleId, deleteCommentById } = re
 const { psqlErrorHandler, customErrorHandler, serverErrorHandler } = require('./errors/index');
 
 const app = express()
+
+app.use(cors())
 
 app.use(express.json());
 
@@ -29,7 +32,7 @@ app.delete('/api/comments/:comment_id', deleteCommentById);
 app.get('/api/users', getUsers);
 
 app.all('*', (req, res, next) => {
-    res.status(404).send({ message: 'Invalid endpoint' });
+    res.status(404).send({ message: 'Path not found' });
 })
 
 app.use(psqlErrorHandler);

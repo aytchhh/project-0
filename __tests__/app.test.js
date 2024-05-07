@@ -13,7 +13,7 @@ describe('/api/not-a-route',()=>{
     test('GET:404 responds with an error message when given an invalid route', ()=>{
         return request(app).get('/api/not-a-route').expect(404)
         .then(({body: {message}})=>{
-            expect(message).toBe('Invalid endpoint')
+            expect(message).toBe('Path not found')
         })
     })
 })
