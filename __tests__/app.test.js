@@ -377,3 +377,27 @@ describe('/api/users', ()=>{
         })
     })
 })
+
+describe('/api/users/:username', ()=>{
+    test('GET:200 responds with a user object based on the username', ()=>{
+        return request(app).get('/api/users/icellusedkars').expect(200)
+        .then(({body: {user}})=>{
+            expect(user).toEqual(
+                {
+                    username: 'icellusedkars',
+                    name: 'sam',
+                    avatar_url: 'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4'
+                }
+            )
+        })
+    })
+
+    test('GET:404 responds with an error message when given non-existent username', ()=>{
+        return request(app).get('/api/users/1').expect(404)
+        .then(({body: {message}})=>{
+            expect(message).toBe('user not found')
+        })
+    })
+
+
+})
