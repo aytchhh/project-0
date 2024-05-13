@@ -232,6 +232,34 @@ describe('/api/articles?queries', ()=>{
                 expect(message).toBe('article not found')
             })
         })
+
+        test('GET:200 responds with an array of articles sorted by specified column', ()=>{
+            return request(app).get('/api/articles?sort_by=comment_count').expect(200)
+            .then(({body: {articles}})=>{
+                expect(articles).toBeSortedBy('comment_count', {descending: true})
+            })
+        })
+
+        test('GET:400 responds with an error message when provided with invalid sort_by', ()=>{
+            return request(app).get('/api/articles?sort_by=1').expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Invalid sort')
+            })
+        })
+
+        test('GET:200 responds with an array of articles ordered by correct order(ASC/DESC)', ()=>{
+            return request(app).get('/api/articles?order=asc').expect(200)
+            .then(({body: {articles}})=>{
+                expect(articles).toBeSorted()
+            })
+        })
+
+        test('GET:400 responds with an error message when provided with invalid order', ()=>{
+            return request(app).get('/api/articles?order=up').expect(400)
+            .then(({body: {message}})=>{
+                expect(message).toBe('Invalid order')
+            })
+        })
     })
 
 describe('/api/articles/:article_id/comments', ()=>{

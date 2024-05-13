@@ -1,4 +1,5 @@
-const db = require('../db/connection')
+const db = require('../db/connection');
+const { getSlug } = require('./utils');
 
 exports.fetchArticleById = (id) => {
     return db.query(`
@@ -13,9 +14,10 @@ exports.fetchArticleById = (id) => {
 }
 
 exports.fetchArticles = (query, queryKeys) => {
-    const topics = []
     const sqlValue = []
-    const validQuery = ['topic']
+    const validQuery = ['topic', 'sort_by', 'order']
+    const validSortBy = ["article_id", "author", "title", "topic", "created_at", "votes", "article_img_url", "comment_count"]
+    const validOrder = ['ASC', 'DESC']
     const allValid = queryKeys.every((query)=>validQuery.includes(query))
 
     if (!allValid) return Promise.reject({status: 400, message: 'Invalid query'})
@@ -23,32 +25,34 @@ exports.fetchArticles = (query, queryKeys) => {
     let sqlStr = `
     SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count 
     FROM articles LEFT JOIN comments
-    ON articles.article_id = comments.article_id
+    ON articles.article_id = comments.article_id 
     `
 
     if (query.topic) {
-        sqlStr += `WHERE articles.topic = $1`
+        sqlStr += `WHERE articles.topic = $1 `
         sqlValue.push(query.topic)
     }
 
-    sqlStr += `
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;
-    `
-    return db.query(`SELECT slug FROM topics;`)
-    .then(({rows})=>{
-        return rows.reduce((acc, current)=>{
-            acc.push(current.slug)
-            return acc
-        },topics)
-    })
-    .then(()=>{
-        if (query.topic && !topics.includes(query.topic)) return Promise.reject({ status: 404, message: 'article not found' })
-        return db.query(sqlStr, sqlValue)
-    })
-    .then(({ rows }) => {
-        return rows
-    })
+    sqlStr += `GROUP BY articles.article_id `
+
+    if (query.sort_by) {
+        if (!validSortBy.includes(query.sort_by)) return Promise.reject({ status: 400, message: 'Invalid sort' })
+        sqlStr += `ORDER BY ${query.sort_by} `
+    } else sqlStr += `ORDER BY created_at `
+
+    if (query.order) {
+        if (!validOrder.includes(query.order.toUpperCase())) return Promise.reject({ status: 400, message: 'Invalid order' })
+        sqlStr += `${query.order};`
+    } else sqlStr += `DESC;`
+
+    return getSlug()
+        .then((topics)=>{
+            if (query.topic && !topics.includes(query.topic)) return Promise.reject({ status: 404, message: 'article not found' })
+            return db.query(sqlStr, sqlValue)
+        })
+        .then(({ rows }) => {
+            return rows
+        })
 }
 
 exports.updateArticleById = (id, { inc_votes: newVote }) => {
