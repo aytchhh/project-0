@@ -38,11 +38,11 @@ git clone https://github.com/aytchhh/project-0.git
 ```
 - If you are not familiar with github, check out this article: [cloning a repo]().
 
-- After cloning, open this repo in VSCode or your preferred editor. (If you'd like to open it using your terminal, [this video](https://www.youtube.com/watch?v=iP5FKZXtDBs) is a good guide.)
+- After cloning, open this repo in VSCode or your preferred editor.
 
 - open the terminal within your editor. For VSCode, press **Ctrl+\`** or **Cmd+`**
 
-- type the following commands:<br><br>
+
 2. Install dependencies:
 
 
