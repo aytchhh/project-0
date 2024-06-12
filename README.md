@@ -1,4 +1,4 @@
-# Northcoders News API
+# NC News API
 
 NC News API is a back-end interface built for modern web applications. It simplifies data management with PostgreSQL databases, enabling flexible interaction via endpoints. 
 
@@ -13,7 +13,6 @@ Designed to emulate real-world backend service like reddit, an efficient solutio
 `https://nc-news-hwajay.onrender.com/api`
 
 3. Browse through the result
-<br>
 
 
 **Note**:
@@ -21,22 +20,31 @@ Designed to emulate real-world backend service like reddit, an efficient solutio
 - You can find all the existing endpoints in [this json file](./endpoints.json).
 - If your data appears on one line, it can be difficult to read. Consider installing a JSON Formatter extension to your browser. For Chrome users, I recommend [this one](https://chromewebstore.google.com/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=en).
 
+<br>
 
 ## Setting up Locally
 
 Before setting up, make sure your system meets the following requirements:
 - Node.js v21.6.1 or higher
-- Postgres v15.6 or higher
-<br>
-<br>
+- PostgreSQL v15.6 or higher
 
+You can check your versions by running the following commands in your terminal:
+```sh
+node --version
+```
+```sh
+psql -V
+```
+
+
+<br>
 1. Clone the repository:
 
 - Navigate to the folder where you want to clone the repo, then type the following commands in your terminal: 
 ```sh
 git clone https://github.com/aytchhh/project-0.git
 ```
-- If you are not familiar with github, check out this article: [cloning a repo]().
+- If you are not familiar with github, check out this article: [cloning a repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository).
 
 - After cloning, open this repo in VSCode or your preferred editor.
 
